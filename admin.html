@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Kings PC Services</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    input, button, select {
+      margin: 5px 0;
+      padding: 8px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    img.preview {
+      max-width: 150px;
+      display: block;
+      margin-top: 5px;
+    }
+
+    li {
+      margin-bottom: 20px;
+    }
+
+    #user-list button,
+    #product-list button {
+      padding: 5px 10px;
+      font-size: 14px;
+      width: auto;
+      margin: 5px 5px 0 0;
+      cursor: pointer;
+      background-color: #1a1a1a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+
+    #user-list button:hover,
+    #product-list button:hover {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Hamburger Menu -->
+  <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+  <div class="side-menu" id="sideMenu">
+    <a href="index.html">Home</a>
+    <a href="#user-section">Users</a>
+    <a href="#add-product-form">Add Product</a>
+    <a href="#product-list">Edit Products</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+
+  <header>
+    <h1>Admin Dashboard</h1>
+    <p>Manage Users and Products</p>
+  </header>
+
+  <main>
+    <!-- Users -->
+    <h2 id="user-section">Registered Users</h2>
+    <ul id="user-list"></ul>
+
+    <hr>
+
+    <!-- Add Product -->
+    <h2>Add New Product</h2>
+    <form id="add-product-form">
+      <input type="text" id="product-name" placeholder="Product Name" required><br>
+      <input type="number" id="product-price" placeholder="Price in Tzs" required><br>
+
+      <select id="product-category" required>
+        <option value="" disabled selected>Select Category</option>
+        <option value="Laptops">Laptops</option>
+        <option value="Accessories">Accessories</option>
+        <option value="Gaming PCs">Gaming PCs</option>
+        <option value="Storage">Storage</option>
+        <option value="Motherboards">Motherboards</option>
+        <option value="Processors">Processors</option>
+      </select><br>
+
+      <input type="file" id="product-image" accept="image/*" required><br>
+      <img id="preview" class="preview" src="#" alt="Image Preview" style="display: none;"><br>
+
+      <button type="submit">Add Product</button>
+    </form>
+
+    <hr>
+
+    <!-- Edit Products -->
+    <h2>Edit Products</h2>
+    <ul id="product-list"></ul>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Kings PC Services. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const loggedIn = localStorage.getItem("loggedInUser");
+    if (loggedIn !== "admin") {
+      alert("Access denied. Only admin can view this page.");
+      window.location.href = "index.html";
+    }
+
+    function toggleMenu() {
+      document.getElementById("sideMenu").classList.toggle("active");
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "index.html";
+    }
+
+    function loadUsers() {
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const list = document.getElementById("user-list");
+      list.innerHTML = "";
+
+      users.forEach((user, i) => {
+        const li = document.createElement("li");
+        li.textContent = user.username;
+
+        const btn = document.createElement("button");
+        btn.textContent = "Delete";
+        btn.onclick = () => deleteUser(i);
+
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+
+      if (users.length === 0) {
+        list.innerHTML = "<p>No registered users.</p>";
+      }
+    }
+
+    function deleteUser(index) {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      if (users[index].username === "admin") {
+        alert("Cannot delete admin.");
+        return;
+      }
+      if (confirm(`Delete ${users[index].username}?`)) {
+        users.splice(index, 1);
+        localStorage.setItem("users", JSON.stringify(users));
+        loadUsers();
+      }
+    }
+
+    function loadProducts() {
+      const products = JSON.parse(localStorage.getItem("products")) || [];
+      const list = document.getElementById("product-list");
+      list.innerHTML = "";
+
+      products.forEach((product, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <strong>${product.name}</strong> - Tzs ${product.price.toLocaleString()}<br>
+          <em>Category: ${product.category}</em><br>
+          <img src="${product.image}" class="preview"><br>
+          <button onclick="editProduct(${index})">Edit</button>
+          <button onclick="deleteProduct(${index})">Delete</button>
+        `;
+        list.appendChild(li);
+      });
+
+      if (products.length === 0) {
+        list.innerHTML = "<p>No products added yet.</p>";
+      }
+    }
+
+    function deleteProduct(index) {
+      const products = JSON.parse(localStorage.getItem("products")) || [];
+      if (confirm(`Delete ${products[index].name}?`)) {
+        products.splice(index, 1);
+        localStorage.setItem("products", JSON.stringify(products));
+        loadProducts();
+      }
+    }
+
+    function editProduct(index) {
+      const products = JSON.parse(localStorage.getItem("products")) || [];
+      const product = products[index];
+
+      const newName = prompt("Edit product name:", product.name);
+      if (newName === null) return;
+
+      const newPrice = prompt("Edit price (Tzs):", product.price);
+      if (newPrice === null || isNaN(newPrice)) return;
+
+      const newCategory = prompt("Edit category:", product.category) || product.category;
+      const newImage = prompt("Paste new image URL or leave empty:", "") || product.image;
+
+      products[index] = {
+        name: newName.trim(),
+        price: parseInt(newPrice),
+        image: newImage,
+        category: newCategory
+      };
+
+      localStorage.setItem("products", JSON.stringify(products));
+      loadProducts();
+    }
+
+    document.getElementById("product-image").addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const preview = document.getElementById("preview");
+          preview.src = e.target.result;
+          preview.style.display = "block";
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("add-product-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const name = document.getElementById("product-name").value.trim();
+      const price = parseInt(document.getElementById("product-price").value);
+      const category = document.getElementById("product-category").value;
+      const imageFile = document.getElementById("product-image").files[0];
+
+      if (!name || !price || !imageFile || !category) {
+        alert("All fields are required.");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function () {
+        const base64Image = reader.result;
+        const newProduct = { name, price, image: base64Image, category };
+        const products = JSON.parse(localStorage.getItem("products")) || [];
+        products.push(newProduct);
+        localStorage.setItem("products", JSON.stringify(products));
+        alert("Product added.");
+        document.getElementById("add-product-form").reset();
+        document.getElementById("preview").style.display = "none";
+        loadProducts();
+      };
+      reader.readAsDataURL(imageFile);
+    });
+
+    // Initialize
+    loadUsers();
+    loadProducts();
+  </script>
+</body>
+</html>

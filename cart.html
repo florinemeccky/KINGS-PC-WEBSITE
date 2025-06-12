@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart - Kings PC Services</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Hamburger Menu -->
+<div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+<div class="side-menu" id="sideMenu">
+  <a href="index.html">Home</a>
+  <a href="products.html">Products</a>
+  <a href="cart.html">Cart</a>
+  <a href="checkout.html">Checkout</a>
+  <a href="profile.html">Profile</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+  <header>
+    <h1>Kings PC Services</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="products.html">Products</a></li>
+        <li><a href="cart.html">Cart</a></li>
+        <li><a href="checkout.html">Checkout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+  <h2>Your Shopping Cart</h2>
+  <div id="cart-items">
+    <!-- Cart items will be inserted here by JavaScript -->
+  </div>
+  <div id="cart-total">
+    <p>Total: Tzs <span id="total-amount">0</span></p>
+    <a href="checkout.html"><button>Proceed to Checkout</button></a>
+<button id="clear-cart">Clear Cart</button>
+
+
+  </div>
+</main>
+
+
+  <footer>
+    <p>&copy; 2025 Kings PC Services. All rights reserved.</p>
+  </footer>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cartItemsContainer = document.getElementById('cart-items');
+    const totalDisplay = document.getElementById('total-amount');
+
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    if (cart.length === 0) {
+      cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+      return;
+    }
+
+    let total = 0;
+    cart.forEach(item => {
+      const itemDiv = document.createElement('div');
+      itemDiv.innerHTML = `<p>${item.name} - Tzs ${item.price.toLocaleString()}</p>`;
+      cartItemsContainer.appendChild(itemDiv);
+      total += item.price;
+    });
+
+    totalDisplay.textContent = total.toLocaleString();
+  });
+  </script>
+  <script src="cart-script.js">
+    </script>
+<script>
+  function toggleMenu() {
+    document.getElementById("sideMenu").classList.toggle("active");
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "index.html";
+  }
+</script>
+
+</body>
+</html>

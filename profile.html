@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile - Kings PC Services</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <!-- Hamburger Menu -->
+  <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+  <div class="side-menu" id="sideMenu">
+    <a href="index.html">Home</a>
+    <a href="products.html">Products</a>
+    <a href="cart.html">Cart</a>
+    <a href="checkout.html">Checkout</a>
+    <a href="profile.html">Profile</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+  <header>
+    <h1>Kings PC Services</h1>
+    </nav>
+  </header>
+
+  <main>
+    <h2>User Profile</h2>
+    <div class="profile-box">
+      <p><strong>Username:</strong> <span id="profile-username"></span></p>
+      <p>Welcome to your profile page! You can view your account info here.</p>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Kings PC Services. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const user = localStorage.getItem("loggedInUser");
+    if (!user) {
+      alert("Please log in first.");
+      window.location.href = "index.html";
+    } else {
+      document.getElementById("profile-username").textContent = user;
+    }
+
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.removeItem("loggedInUser");
+      window.location.href = "index.html";
+    });
+  </script>
+  <script>
+  function toggleMenu() {
+    document.getElementById("sideMenu").classList.toggle("active");
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedInUser");
+    window.location.href = "index.html";
+  }
+</script>
+</body>
+</html>

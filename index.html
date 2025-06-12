@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kings PC Services</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Hamburger Menu -->
+  <div class="hamburger" onclick="toggleMenu()">&#9776;</div>
+  <div class="side-menu" id="sideMenu">
+    <a href="index.html">Home</a>
+    <a href="products.html" id="menu-products">Products</a>
+    <a href="cart.html" id="menu-cart">Cart</a>
+    <a href="checkout.html" id="menu-checkout">Checkout</a>
+    <a href="profile.html" id="menu-profile">Profile</a>
+    <a href="#" onclick="logout()">Logout</a>
+  </div>
+
+  <header>
+    <h1>Kings PC Services</h1>
+    <nav>
+      <ul>
+        <li><a href="index.html" id="nav-home">Home</a></li>
+        <li><a href="products.html" id="nav-products">Products</a></li>
+        <li><a href="cart.html" id="nav-cart">Cart</a></li>
+        <li><a href="checkout.html" id="nav-checkout">Checkout</a></li>
+      </ul>
+    </nav>
+    <p id="user-greeting" style="font-weight: bold;"></p>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h2>Welcome to Kings PC Services</h2>
+      <p>Top-quality tech gadgets delivered across Tanzania.</p>
+
+      <div class="auth-buttons" id="auth-buttons">
+        <button onclick="openLogin()">Login</button>
+        <button onclick="openRegister()">Create Account</button>
+      </div>
+    </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('loginModal')">&times;</span>
+        <h2>Login</h2>
+        <input type="text" id="login-username" placeholder="Username" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button onclick="login()">Login</button>
+      </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('registerModal')">&times;</span>
+        <h2>Create Account</h2>
+        <input type="text" id="reg-username" placeholder="Username" required>
+        <input type="password" id="reg-password" placeholder="Password" required>
+        <button onclick="register()">Register</button>
+      </div>
+    </div>
+
+    <section class="categories">
+      <h2>Shop by Category</h2>
+      <div class="category-row">
+        <div class="category-box" onclick="location.href='products.html'">
+          <h3>Laptops</h3>
+          <p>Powerful machines for work or gaming</p>
+        </div>
+        <div class="category-box" onclick="location.href='products.html'">
+          <h3>Gaming PCs</h3>
+          <p>Custom-built for performance</p>
+        </div>
+        <div class="category-box" onclick="location.href='products.html'">
+          <h3>Storage Devices</h3>
+          <p>SSDs, Hard Drives & more</p>
+        </div>
+      </div>
+      <div class="category-row">
+        <div class="category-box" onclick="location.href='products.html'">
+          <h3>Motherboards</h3>
+          <p>High-end boards for gamers and pros</p>
+        </div>
+        <div class="category-box" onclick="location.href='products.html'">
+          <h3>Accessories</h3>
+          <p>Keyboards, Mice, Headsets</p>
+        </div>
+        <div class="category-box" onclick="location.href='products.html'">
+          <h3>Processors</h3>
+          <p>Intel, AMD – we stock them all</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="about">
+      <h2>About Kings PC Services</h2>
+      <p>Kings PC Services is your trusted tech partner in Tanzania. We offer reliable, high-performance computing products for students, gamers, developers, and businesses.</p>
+    </section>
+
+    <section class="contact">
+      <h2>Contact Us</h2>
+      <p>📞 +255 614 886 685</p>
+      <p>📞 +255 765 187 512</p>
+      <p>📧 <a href="mailto:kingspcservices1@gmail.com">kingspcservices1@gmail.com</a></p>
+      <p>💬 <a href="https://wa.me/255614886685" target="_blank">Chat on WhatsApp</a></p>
+      <div class="social">
+        <p>Follow us:</p>
+        <a href="https://www.instagram.com/_kingspcservices" target="_blank">Instagram</a> |
+        <a href="https://www.tiktok.com/@kingspcservices" target="_blank">TikTok</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Kings PC Services. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // ✅ Ensure admin account always exists
+    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const adminExists = existingUsers.some(user => user.username === "admin");
+    if (!adminExists) {
+      existingUsers.push({ username: "admin", password: "admin123" });
+      localStorage.setItem("users", JSON.stringify(existingUsers));
+    }
+
+    function toggleMenu() {
+      document.getElementById("sideMenu").classList.toggle("active");
+    }
+
+    function openLogin() {
+      document.getElementById("loginModal").style.display = "block";
+    }
+
+    function openRegister() {
+      document.getElementById("registerModal").style.display = "block";
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    function logout() {
+      localStorage.removeItem("loggedInUser");
+      location.reload();
+    }
+
+    function register() {
+      const username = document.getElementById("reg-username").value.trim();
+      const password = document.getElementById("reg-password").value;
+      if (!username || !password) return alert("Fill in all fields.");
+
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+      const exists = users.find(user => user.username === username);
+      if (exists) return alert("Username already exists.");
+
+      users.push({ username, password });
+      localStorage.setItem("users", JSON.stringify(users));
+      localStorage.setItem("loggedInUser", username);
+      alert("Account created!");
+      location.reload();
+    }
+
+    function login() {
+      const username = document.getElementById("login-username").value.trim();
+      const password = document.getElementById("login-password").value;
+      const users = JSON.parse(localStorage.getItem("users")) || [];
+
+      const user = users.find(user => user.username === username && user.password === password);
+      if (!user) return alert("Incorrect credentials.");
+
+      localStorage.setItem("loggedInUser", username);
+      if (username === "admin") {
+        window.location.href = "admin.html";
+      } else {
+        location.reload();
+      }
+    }
+
+    window.onload = () => {
+      const user = localStorage.getItem("loggedInUser");
+
+      if (user) {
+        document.getElementById("user-greeting").textContent = `Welcome, ${user}!`;
+        document.getElementById("auth-buttons").style.display = "none";
+      }
+
+      if (user === "admin") {
+        const ref = document.referrer;
+        const justLoggedIn = ref.includes("index.html") || ref === "";
+        if (justLoggedIn) {
+          window.location.href = "admin.html";
+        } else {
+          const hero = document.querySelector(".hero");
+          const dashBtn = document.createElement("button");
+          dashBtn.textContent = "Go to Admin Dashboard";
+          dashBtn.onclick = () => window.location.href = "admin.html";
+          dashBtn.style.marginTop = "20px";
+          dashBtn.style.padding = "10px 20px";
+          dashBtn.style.backgroundColor = "#1a1a1a";
+          dashBtn.style.color = "white";
+          dashBtn.style.border = "none";
+          dashBtn.style.borderRadius = "4px";
+          dashBtn.style.cursor = "pointer";
+          hero.appendChild(dashBtn);
+        }
+
+        const hide = ["nav-products", "nav-cart", "nav-checkout", "menu-products", "menu-cart", "menu-checkout", "menu-profile"];
+        hide.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = "none";
+        });
+      }
+    };
+  </script>
+</body>
+</html>
