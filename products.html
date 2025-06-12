@@ -19,7 +19,7 @@
     <a href="#" onclick="logout()">Logout</a>
   </div>
 
-   <header>
+  <header>
     <h1>Kings PC Services</h1>
     <nav>
       <ul>
@@ -29,12 +29,9 @@
     </nav>
   </header>
 
-
-
   <main>
     <h2>Our Tech Gadgets</h2>
-   <div class="product-grid" id="product-grid"></div>
-
+    <div class="product-grid" id="product-grid"></div>
   </main>
 
   <footer>
@@ -42,19 +39,6 @@
   </footer>
 
   <script>
-    const buttons = document.querySelectorAll('.add-to-cart');
-    buttons.forEach(button => {
-      button.onclick = () => {
-        const product = button.closest('.product');
-        const name = product.getAttribute('data-name');
-        const price = parseInt(product.getAttribute('data-price'));
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        cart.push({ name, price });
-        localStorage.setItem('cart', JSON.stringify(cart));
-        alert(`${name} added to cart!`);
-      };
-    });
-
     function toggleMenu() {
       document.getElementById("sideMenu").classList.toggle("active");
     }
@@ -63,58 +47,78 @@
       localStorage.removeItem("loggedInUser");
       window.location.href = "index.html";
     }
+
+    // Define default product list with LOCAL image paths
+    const predefinedProducts = [
+      {
+        name: "HP OMEN",
+        category: "Laptops",
+        price: 1200000,
+        image: "images/laptop.jpg"
+      },
+      {
+        name: "SSD 1TB",
+        category: "Storage",
+        price: 250000,
+        image: "images/ssd.jpg"
+      },
+      {
+        name: "Gaming Mouse",
+        category: "Accessories",
+        price: 75000,
+        image: "images/mouse.jpg"
+      },
+      {
+        name: "Asus Motherboard",
+        category: "Motherboards",
+        price: 800000,
+        image: "images/motherboard.jpg"
+      },
+      {
+        name: "Gaming keyboard",
+        category: "Accessories",
+        price: 50000,
+        image: "images/keyboard2.jpg"
+      }
+    ];
+
+    // Only add products if none exist in localStorage
+    const existingProducts = JSON.parse(localStorage.getItem("products")) || [];
+    if (existingProducts.length === 0) {
+      localStorage.setItem("products", JSON.stringify(predefinedProducts));
+    }
+
+    const productContainer = document.getElementById("product-grid");
+    const products = JSON.parse(localStorage.getItem("products")) || [];
+
+    if (products.length === 0) {
+      productContainer.innerHTML = "<p>No products available.</p>";
+    } else {
+      products.forEach(product => {
+        const div = document.createElement("div");
+        div.className = "product";
+        div.innerHTML = `
+          <img src="${product.image}" alt="${product.name}">
+          <h2>${product.name}</h2>
+          <p>Category: ${product.category}</p>
+          <p>Tzs ${product.price.toLocaleString()}</p>
+          <button class="add-to-cart">Add to Cart</button>
+        `;
+        productContainer.appendChild(div);
+      });
+
+      document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.onclick = function () {
+          const name = this.parentElement.querySelector("h2").textContent;
+          const price = parseInt(this.parentElement.querySelector("p:nth-of-type(2)").textContent.replace(/\D/g, ''));
+          const cart = JSON.parse(localStorage.getItem("cart")) || [];
+          cart.push({ name, price });
+          localStorage.setItem("cart", JSON.stringify(cart));
+          alert(`${name} added to cart!`);
+        };
+      });
+    }
   </script>
-  <script>
-  // Define your original products here
-  const predefinedProducts = [
-    
-  ];
-
-  // Load existing products or empty
-  const existing = JSON.parse(localStorage.getItem("products")) || [];
-
-  // Only add predefined products if localStorage is empty
-  if (existing.length === 0) {
-    localStorage.setItem("products", JSON.stringify(predefinedProducts));
-  }
-</script>
-
-<script>
-  const productContainer = document.getElementById("product-grid");
-  const products = JSON.parse(localStorage.getItem("products")) || [];
-
-  if (products.length === 0) {
-    productContainer.innerHTML = "<p>No products available.</p>";
-  } else {
-    products.forEach(product => {
-      const div = document.createElement("div");
-      div.className = "product";
-      div.innerHTML = `
-        <img src="${product.image}" alt="${product.name}">
-        <h2>${product.name}</h2>
-        <p>Category: ${product.category}</p>
-        <p>Tzs ${product.price.toLocaleString()}</p>
-        <button class="add-to-cart">Add to Cart</button>
-      `;
-      productContainer.appendChild(div);
-    });
-
-    // Add to cart functionality
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-      button.onclick = function () {
-        const name = this.parentElement.querySelector("h2").textContent;
-        const price = parseInt(this.parentElement.querySelector("p:nth-of-type(2)").textContent.replace(/\D/g, ''));
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
-        cart.push({ name, price });
-        localStorage.setItem("cart", JSON.stringify(cart));
-        alert(`${name} added to cart!`);
-      };
-    });
-  }
-</script>
-
 
 </body>
 </html>
-<!--       confirmation.textContent = "Payment successful! Thank you for your order.";
- -->
